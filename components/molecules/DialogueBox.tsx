@@ -3,14 +3,22 @@ import React from 'react';
 interface DialogueBoxProps {
   characterName: string;
   dialogue: string;
+  onAdvance?: () => void;
 }
 
 export const DialogueBox: React.FC<DialogueBoxProps> = ({
   characterName,
   dialogue,
+  onAdvance,
 }) => {
   return (
-    <div className="w-full h-full bg-gradient-to-br from-gray-700 via-gray-600 to-gray-700 backdrop-blur-sm rounded-xl border-2 border-gray-500/50 shadow-2xl overflow-hidden relative p-6">
+    <div
+      className="w-full h-full bg-gradient-to-br from-gray-700 via-gray-600 to-gray-700 backdrop-blur-sm rounded-xl border-2 border-gray-500/50 shadow-2xl overflow-hidden relative p-6 cursor-pointer"
+      onClick={onAdvance}
+      onKeyDown={(e) => e.key === 'Enter' && onAdvance?.()}
+      role="button"
+      tabIndex={0}
+    >
       {/* 캐릭터 이름 - 상단 왼쪽 */}
       {characterName && (
         <div className="absolute top-6 left-6">
