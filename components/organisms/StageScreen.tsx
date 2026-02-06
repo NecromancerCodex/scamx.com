@@ -29,7 +29,6 @@ export const StageScreen: React.FC<StageScreenProps> = ({
   onNextChapter,
   stageNumber,
 }) => {
-  const [answer, setAnswer] = useState('');
   const [phase, setPhase] = useState<GamePhase>(eventDialogue ? 'event' : 'ask');
   const [resultVideoSrc, setResultVideoSrc] = useState<string>('');
   const [isCorrectAnswer, setIsCorrectAnswer] = useState(false);
@@ -59,15 +58,16 @@ export const StageScreen: React.FC<StageScreenProps> = ({
     setPhase('complete');
   };
 
-  const handleSubmit = () => {
-    if (!answer.trim()) return;
-    
-    const trimmedAnswer = answer.trim();
-    const isCorrect = correctAnswer ? trimmedAnswer === correctAnswer.trim() : false;
-    
+  // O/X 퀴즈: 의심스러운 전화인가요?
+  const isOXQuiz = correctAnswer && ['O', 'X'].includes(correctAnswer.trim().toUpperCase());
+
+  const handleOXSelect = (choice: 'O' | 'X') => {
+    playButtonClickSound();
+    const expected = correctAnswer?.trim().toUpperCase() as 'O' | 'X';
+    const isCorrect = expected === choice;
+
     setIsCorrectAnswer(isCorrect);
-    
-    // 정답/오답에 따라 결과 비디오 설정
+
     if (isCorrect && goodVideoSrc) {
       setResultVideoSrc(goodVideoSrc);
       setPhase('result');
@@ -75,15 +75,12 @@ export const StageScreen: React.FC<StageScreenProps> = ({
       setResultVideoSrc(badVideoSrc);
       setPhase('result');
     }
-    
-    onAnswerSubmit(trimmedAnswer, isCorrect);
-    setAnswer('');
+
+    onAnswerSubmit(choice, isCorrect);
   };
 
   const handleRetry = () => {
     playButtonClickSound();
-    // 처음 상태로 리셋
-    setAnswer('');
     setIsCorrectAnswer(false);
     setResultVideoSrc('');
     setReplayCount(prev => prev + 1);
@@ -92,8 +89,6 @@ export const StageScreen: React.FC<StageScreenProps> = ({
 
   const handleReplayQuestion = () => {
     playButtonClickSound();
-    // 문제 다시보기: 이벤트 대화와 ask 비디오 다시 재생
-    setAnswer('');
     setReplayCount(prev => prev + 1);
     setPhase(eventDialogue ? 'event' : 'ask');
   };
@@ -129,11 +124,11 @@ export const StageScreen: React.FC<StageScreenProps> = ({
   const showReplayButton = phase === 'input';
 
   return (
-    <div className="relative w-full h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-hidden flex flex-col">
+    <div className="relative w-full h-screen bg-[#FAFAFA] overflow-hidden flex flex-col">
       {/* 상단: 동영상 재생 영역 */}
       {currentVideoSrc && (
         <div className="flex-[0.65] flex items-center justify-center pt-8 pb-4 min-h-0 relative">
-          <div className="w-[75%] h-full bg-gradient-to-br from-gray-700 via-gray-600 to-gray-700 rounded-xl overflow-hidden shadow-2xl border border-gray-500/30">
+          <div className="w-[75%] h-full bg-white rounded-2xl overflow-hidden shadow-sm border border-[#E8E8E8]">
             <VideoStage
               key={`${currentVideoSrc}-${replayCount}`}
               videoSrc={currentVideoSrc}
@@ -145,7 +140,8 @@ export const StageScreen: React.FC<StageScreenProps> = ({
           {showReplayButton && (
             <button
               onClick={handleReplayQuestion}
-              className="absolute top-12 right-[14%] px-6 py-2 bg-gradient-to-r from-gray-700/90 to-gray-600/90 hover:from-gray-600 hover:to-gray-500 text-white text-sm font-semibold rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 active:scale-95 border-2 border-gray-500/50 backdrop-blur-sm"
+              className="absolute top-12 right-[14%] px-6 py-2 text-[#3C1E1E] text-sm font-semibold rounded-xl shadow-sm transition-all duration-200 hover:opacity-90 active:scale-95 border border-[#E8E8E8] bg-white"
+              style={{ backgroundColor: '#FEE500' }}
             >
               문제 다시보기
             </button>
@@ -164,16 +160,16 @@ export const StageScreen: React.FC<StageScreenProps> = ({
       )}
       
       {showEmptyDialogue && (
-        <div className="flex-[0.25] w-[75%] mx-auto mb-4 min-h-[200px] flex-shrink-0">
-          <DialogueBox characterName="주디" dialogue="어떻게 해결하면 좋을까...?" />
+        <div className="flex-[0.25] w-[75%] mx-auto mb-4 min-h-[120px] flex-shrink-0">
+          <DialogueBox characterName="퀴즈" dialogue="의심스러운 전화인가요?" />
         </div>
       )}
       
       {showSuccessDialogue && (
         <div className="flex-[0.25] w-[75%] mx-auto mb-4 min-h-[200px] flex-shrink-0">
           <DialogueBox
-            characterName="주디"
-            dialogue="고마워 너덕분에 앞으로 실수 안할꺼같아"
+            characterName="정답"
+            dialogue="잘했어요! 보이스피싱에 속지 않았어요. 금전 요구 시 반드시 본인 확인을 하세요."
           />
         </div>
       )}
@@ -181,27 +177,30 @@ export const StageScreen: React.FC<StageScreenProps> = ({
       {showFailDialogue && (
         <div className="flex-[0.25] w-[75%] mx-auto mb-4 min-h-[200px] flex-shrink-0">
           <DialogueBox
-            characterName="주디"
-            dialogue="어쩔 수 없지 뭐... 나랑 이 직업이 안맞나봐....."
+            characterName="주의"
+            dialogue="조심하세요. 금전을 요구하는 전화는 보이스피싱일 수 있어요. 직접 만나서 확인한 뒤에만 도와주세요."
           />
         </div>
       )}
       
-      {/* 정답 입력창 */}
-      {showInput && (
-        <div className="w-[75%] mx-auto mb-6">
-          <input
-            type="text"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleSubmit();
-              }
-            }}
-            placeholder="답변을 입력하세요..."
-            className="w-full px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-500 text-white text-center text-lg font-medium rounded-lg border-2 border-gray-400/50 placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-gray-300 shadow-lg transition-all hover:from-gray-500 hover:to-gray-400"
-          />
+      {/* O/X 퀴즈 버튼 */}
+      {showInput && isOXQuiz && (
+        <div className="w-[75%] mx-auto mb-6 flex justify-center gap-6">
+          <button
+            type="button"
+            onClick={() => handleOXSelect('O')}
+            className="w-28 h-28 rounded-full text-4xl font-bold text-[#3C1E1E] shadow-sm border-2 border-[#E8E8E8] transition-all hover:scale-105 active:scale-95 hover:border-[#FEE500]/60"
+            style={{ backgroundColor: '#FEE500' }}
+          >
+            O
+          </button>
+          <button
+            type="button"
+            onClick={() => handleOXSelect('X')}
+            className="w-28 h-28 rounded-full text-4xl font-bold text-[#3C1E1E] bg-white shadow-sm border-2 border-[#E8E8E8] transition-all hover:scale-105 active:scale-95 hover:bg-[#FFFEF7] hover:border-[#FEE500]/40"
+          >
+            X
+          </button>
         </div>
       )}
       
@@ -210,7 +209,8 @@ export const StageScreen: React.FC<StageScreenProps> = ({
         <div className="w-[75%] mx-auto mb-6 flex justify-center">
           <button
             onClick={onNextChapter}
-            className="px-10 py-4 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white text-xl font-semibold rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 active:scale-95 border-2 border-gray-500/50"
+            className="px-10 py-4 text-[#3C1E1E] text-xl font-semibold rounded-2xl shadow-sm transition-all duration-200 hover:opacity-90 hover:scale-105 active:scale-95"
+            style={{ backgroundColor: '#FEE500' }}
           >
             다음 챕터로 이동
           </button>
@@ -222,7 +222,7 @@ export const StageScreen: React.FC<StageScreenProps> = ({
         <div className="w-[75%] mx-auto mb-6 flex justify-center">
           <button
             onClick={handleRetry}
-            className="px-10 py-4 bg-gradient-to-r from-gray-700 to-gray-600 hover:from-gray-600 hover:to-gray-500 text-white text-xl font-semibold rounded-lg shadow-lg transition-all duration-200 hover:shadow-xl hover:scale-105 active:scale-95 border-2 border-gray-500/50"
+            className="px-10 py-4 bg-white text-[#3C1E1E] text-xl font-semibold rounded-2xl shadow-sm border border-[#E8E8E8] transition-all duration-200 hover:bg-[#FFFEF7] hover:border-[#FEE500]/40 active:scale-95"
           >
             다시 시도하기
           </button>
@@ -230,7 +230,7 @@ export const StageScreen: React.FC<StageScreenProps> = ({
       )}
       
       {/* 챕터 번호 표시 */}
-      <div className="absolute top-4 left-4 bg-gradient-to-r from-gray-800/80 to-gray-700/80 backdrop-blur-sm text-white px-4 py-2 rounded-lg z-20 border border-gray-600/50 shadow-lg">
+      <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm text-[#3C1E1E] px-4 py-2 rounded-xl z-20 border border-[#E8E8E8] shadow-sm">
         <span className="text-lg font-semibold">Chapter {stageNumber}</span>
       </div>
     </div>

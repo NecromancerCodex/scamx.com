@@ -58,7 +58,7 @@ export default function ScamAgentPage() {
         throw new Error(detail);
       }
 
-      // 결과 판정: 차단(50% 이상) / 경고(30~49%) / 통과(30% 미만)
+      // 결과 판정: 차단(60% 이상) / 경고(50~59%) / 통과(50% 미만)
       let status = '통과';
       if (data.is_blocked) {
         status = '차단';
@@ -90,26 +90,24 @@ export default function ScamAgentPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      {/* 헤더 */}
-      <header className="shrink-0 flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-white shadow-sm">
-        <Link
-          href="/"
-          className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-        >
+    <div className="flex flex-col h-screen bg-[#FAFAFA]">
+      <header
+        className="shrink-0 flex items-center justify-between h-14 px-4"
+        style={{ backgroundColor: '#FEE500' }}
+      >
+        <Link href="/" className="text-sm text-[#3C1E1E] hover:underline transition-colors">
           ← 처음으로
         </Link>
-        <h1 className="text-lg font-semibold text-gray-800">스캠분류 에이전트</h1>
-        <div className="w-14" /> {/* 균형용 */}
+        <h1 className="text-lg font-bold text-[#3C1E1E] tracking-tight">스캠분류 에이전트</h1>
+        <div className="w-14" />
       </header>
 
-      {/* 메시지 영역 */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-3xl mx-auto px-4 py-6">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center pt-20 text-center">
-              <p className="text-gray-500 text-lg mb-2">무엇이든 입력해 보세요</p>
-              <p className="text-gray-400 text-sm">
+              <p className="text-[#191919] text-lg mb-2 font-medium">무엇이든 입력해 보세요</p>
+              <p className="text-[#6B6B6B] text-sm">
                 스캠·피싱 여부 분류를 도와드립니다
               </p>
             </div>
@@ -123,9 +121,10 @@ export default function ScamAgentPage() {
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-3 ${
                       msg.role === 'user'
-                        ? 'bg-gray-800 text-white rounded-br-md'
-                        : 'bg-white border border-gray-200 text-gray-800 rounded-bl-md shadow-sm'
+                        ? 'text-white rounded-br-md'
+                        : 'bg-white border border-[#E8E8E8] text-[#191919] rounded-bl-md shadow-sm'
                     }`}
+                    style={msg.role === 'user' ? { backgroundColor: '#3C1E1E' } : undefined}
                   >
                     <p className="text-[15px] leading-relaxed whitespace-pre-wrap">
                       {msg.content}
@@ -135,11 +134,11 @@ export default function ScamAgentPage() {
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-white border border-gray-200 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
+                  <div className="bg-white border border-[#E8E8E8] rounded-2xl rounded-bl-md px-4 py-3 shadow-sm">
                     <span className="inline-flex gap-1">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                      <span className="w-2 h-2 bg-[#FEE500] rounded-full animate-bounce [animation-delay:-0.3s]" />
+                      <span className="w-2 h-2 bg-[#FEE500] rounded-full animate-bounce [animation-delay:-0.15s]" />
+                      <span className="w-2 h-2 bg-[#FEE500] rounded-full animate-bounce" />
                     </span>
                   </div>
                 </div>
@@ -150,31 +149,27 @@ export default function ScamAgentPage() {
         </div>
       </div>
 
-      {/* 입력 영역 */}
-      <div className="shrink-0 border-t border-gray-200 bg-white p-4">
-        <form
-          onSubmit={handleSubmit}
-          className="max-w-3xl mx-auto space-y-3"
-        >
-          {/* 발신자 번호 입력 */}
-          <div className="flex items-center gap-3">
-            <label className="shrink-0 text-sm font-medium text-gray-700 w-24">
-              발신자 번호
-            </label>
-            <input
-              type="text"
-              value={senderPhone}
-              onChange={(e) => setSenderPhone(e.target.value)}
-              placeholder="010-0000-0000 (선택)"
-              className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
-              disabled={isLoading}
-            />
+      <div className="shrink-0 border-t border-[#E8E8E8] bg-white p-4">
+        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-3">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <label className="shrink-0 text-sm font-medium text-[#3C1E1E] w-24">
+                발신자 번호
+              </label>
+              <input
+                type="text"
+                value={senderPhone}
+                onChange={(e) => setSenderPhone(e.target.value)}
+                placeholder="010-0000-0000 (선택)"
+                className="flex-1 rounded-xl border border-[#E8E8E8] px-4 py-2 text-[#191919] placeholder-[#9E9E9E] focus:outline-none focus:ring-2 focus:ring-[#FEE500]/50 focus:border-[#FEE500]/50"
+                disabled={isLoading}
+              />
+            </div>
           </div>
 
-          {/* 메시지 내용 입력 */}
           <div className="flex gap-3 items-end">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#3C1E1E] mb-2">
                 메시지 내용
               </label>
               <textarea
@@ -188,14 +183,15 @@ export default function ScamAgentPage() {
                 }}
                 placeholder="분석할 문자 내용을 입력하세요..."
                 rows={3}
-                className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent"
+                className="w-full resize-none rounded-xl border border-[#E8E8E8] px-4 py-3 text-[#191919] placeholder-[#9E9E9E] focus:outline-none focus:ring-2 focus:ring-[#FEE500]/50 focus:border-[#FEE500]/50"
                 disabled={isLoading}
               />
             </div>
             <button
               type="submit"
               disabled={!messageContent.trim() || isLoading}
-              className="shrink-0 h-12 w-12 rounded-full bg-gray-800 hover:bg-gray-700 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center justify-center text-white transition-colors"
+              className="shrink-0 h-12 w-12 rounded-full hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-[#3C1E1E] transition-colors shadow-sm"
+              style={{ backgroundColor: '#FEE500' }}
               aria-label="전송"
             >
               <svg

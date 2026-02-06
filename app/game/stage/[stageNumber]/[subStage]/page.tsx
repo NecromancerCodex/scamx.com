@@ -4,20 +4,20 @@ import { useParams, useRouter } from 'next/navigation';
 import { StageScreen } from '@/components/organisms/StageScreen';
 import { playButtonClickSound } from '@/utils/sound';
 
-// 챕터별 이벤트 대화 데이터
+// 챕터별 이벤트 대화 데이터 (보이스피싱 시나리오)
 // 형식: "스테이지.챕터" (예: "1.1" = Stage 1의 Chapter 1)
 const chapterEvents: Record<string, { characterName: string; text: string }> = {
   '1.1': {
-    characterName: '주디',
-    text: '오또케 오또케 프로젝트가 해킹 당했어!!',
+    characterName: '발신자',
+    text: '엄마 나 핸드폰을 잃어버려서 그런데 100만원만 보내줄 수 있어? 중요한일이라서 그래',
   },
   // 다른 챕터 이벤트도 여기에 추가 가능
 };
 
-// 챕터별 정답 데이터
+// 챕터별 정답 데이터 (O/X 퀴즈: 의심스러운 전화인가요? → O=예, X=아니오)
 const chapterAnswers: Record<string, string> = {
-  '1.1': '프론트에 엑세스 토큰과 리프레쉬 토큰을 두지않는다.',
-  // 다른 챕터 정답도 여기에 추가 가능
+  '1.1': 'O', // 의심스러운 전화 → O가 정답
+  // 다른 챕터: 'O' 또는 'X'
 };
 
 export default function ChapterPage() {

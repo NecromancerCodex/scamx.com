@@ -1,8 +1,19 @@
 @import "tailwindcss";
 
+/* 카카오톡 스타일 테마 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FAFAFA;
+  --foreground: #191919;
+  --kakao-yellow: #FEE500;
+  --kakao-yellow-hover: #F5DC00;
+  --kakao-brown: #3C1E1E;
+  --kakao-chat-bg: #B2C7D9;
+  --kakao-bubble-left: #FFFFFF;
+  --kakao-border: #E8E8E8;
+  --kakao-card: #FFFFFF;
+  --kakao-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --kakao-radius: 16px;
+  --kakao-radius-sm: 12px;
 }
 
 @theme inline {
@@ -12,15 +23,8 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }

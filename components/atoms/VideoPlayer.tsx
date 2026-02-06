@@ -6,6 +6,8 @@ interface VideoPlayerProps {
   loop?: boolean;
   onEnded?: () => void;
   className?: string;
+  /** 0~1, 기본 0.5(50%) */
+  volume?: number;
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -14,6 +16,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   loop = false,
   onEnded,
   className = '',
+  volume = 0.5,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const currentSrcRef = useRef<string>('');
@@ -21,6 +24,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !src) return;
+
+    // 음량 설정 (0~1)
+    video.volume = Math.max(0, Math.min(1, volume));
 
     // src가 실제로 변경되었을 때만 재생
     if (currentSrcRef.current === src) {
@@ -32,6 +38,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     // 비디오 로드 및 재생
     const loadAndPlay = async () => {
       try {
+        video.volume = Math.max(0, Math.min(1, volume));
         // 기존 재생 정지
         video.pause();
         video.currentTime = 0;
@@ -61,7 +68,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         currentSrcRef.current = '';
       }
     };
-  }, [src, autoPlay]);
+  }, [src, autoPlay, volume]);
 
   return (
     <video
